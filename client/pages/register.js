@@ -8,14 +8,24 @@ import {
 } from "reactstrap";
 import { useState } from "react";
 import styles from "../styles/Home.module.css";
+import { useMutateRegisterUser } from "../adapters/user";
 
 export default function Register() {
+  const [name, setName] = useState("");
+  const [GIUemail,setGIUemail] = useState("");
+  const [GIUid, setGIUid] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [emailState, setEmailState] = useState("");
   const [passwordState, setPasswordState] = useState("");
   const [confirmPasswordState, setConfirmPasswordState] = useState("");
+  const [nameState,setNAmeState]= useState("");
+  const [GIUemailState,setGIUemailState]=useState("");
+  const [GIUidState,setGIUidState]=useState("");
+  const [phoneState,setPhoneState]=useState("");
+  const useRegisterMutations=useMutateRegisterUser();
 
   const validateEmail = (value) => {
     const emailRegex =
@@ -50,6 +60,49 @@ export default function Register() {
     setConfirmPasswordState(confirmPasswordState);
   };
 
+  const validateName = (value) => {
+    let nameState;
+    if (name.length > 0) {
+      nameState = "has-success";
+    } else {
+      nameState = "has-danger";
+    }
+    setNAmeState(confirmPasswordState);
+  };
+
+  const validateGIUemail = (value) => {
+    let GIUemailState;
+    if (GIUemail.length > 0) {
+      GIUemailState = "has-success";
+    } else {
+      GIUemailState = "has-danger";
+    }
+    setGIUemailState(confirmPasswordState);
+  };
+
+  const validateGIUid = (value) => {
+    let GIUidState;
+    if (GIUid.length > 0) {
+      GIUidState = "has-success";
+    } else {
+      GIUidState = "has-danger";
+    }
+    setGIUidState(confirmPasswordState);
+  };
+
+  const validatePhone= (value) => {
+    let phoneState;
+    if (phone.length > 0) {
+      phoneState = "has-success";
+    } else {
+      phoneState = "has-danger";
+    }
+    setPhoneState(confirmPasswordState);
+  };
+
+
+
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     if (name === "email") {
@@ -58,10 +111,24 @@ export default function Register() {
     } else if (name === "confirm_password") {
       validateConfirmPassword(value);
       setConfirmPassword(value);
-    } else {
+    } else if (name === 'password') {
       validatePassword(value);
       setPassword(value);
+    } else if (name=== 'name'){
+      validateName(value)
+      setName(value);
+    } else if (name=== 'GIUemail'){
+      validateGIUemail(value);
+      setGIUemail(value);
+    } else if (name=== 'GIUid'){
+      validateGIUid(value);
+      setGIUid(value);
+    } else if (name=== 'phone'){
+      validatePhone(value);
+      setPhone(value);
     }
+
+
   };
 
   const handleSubmit = (event) => {
@@ -69,13 +136,22 @@ export default function Register() {
     validateEmail(email);
     validatePassword(password);
     validateConfirmPassword(confirmPassword);
+    validateName(name);
+    validateGIUemail(GIUemail);
+    validateGIUid(GIUid);
+    validatePhone(phone);
 
     if (
       emailState === "has-success" &&
       passwordState === "has-success" &&
-      confirmPasswordState === "has-success"
+      confirmPasswordState === "has-success"&&
+      nameState === "has-success"&&
+      GIUemailState === "has-success"&&
+      GIUidState=== "has-success"&&
+      phoneState=== "has-success"
     ) {
       // Call User Register Adapter
+     useRegisterMutations.mutate({email, password,name,GIUemail,GIUid,phone});
     }
   };
 
@@ -83,6 +159,18 @@ export default function Register() {
     <div className={styles.App}>
       <h2>Register</h2>
       <Form className={styles.form} onSubmit={handleSubmit}>
+      <FormGroup>
+          <Label className={styles.label} for="name">
+            Name
+          </Label>
+          <Input
+            type="name"
+            name="name"
+            id="name"
+            placeholder=""
+            onChange={handleChange}
+          />
+        </FormGroup>
         <FormGroup>
           <Label className={styles.label} for="email">
             Username
@@ -130,6 +218,42 @@ export default function Register() {
             invalid={confirmPasswordState === "has-danger"}
           />
           <FormFeedback>Passwords don't match.</FormFeedback>
+        </FormGroup>
+        <FormGroup>
+          <Label className={styles.label} for="Phone">
+            phone number
+          </Label>
+          <Input
+            type="phone"
+            name="phone"
+            id="phone"
+            placeholder="***********"
+            onChange={handleChange}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label className={styles.label} for="GIUemail">
+            GIUemail
+          </Label>
+          <Input
+            type="GIUemail"
+            name="GIUemail"
+            id="GIUemail"
+            placeholder="example@student.giu-uni.de"
+            onChange={handleChange}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label className={styles.label} for="GIUid">
+            GIUid
+          </Label>
+          <Input
+            type="GIUid"
+            name="GIUid"
+            id="GIUid"
+            placeholder="100****"
+            onChange={handleChange}
+          />
         </FormGroup>
         <Button color="primary">Submit</Button>
       </Form>

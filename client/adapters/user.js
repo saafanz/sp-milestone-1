@@ -1,24 +1,27 @@
 import apiService from "../services/apiService";
 import { useQuery, useQueryClient, useMutation } from "react-query";
 
-export default function useFetchUser(userId) {
+export  function useFetchUser(userId) {
   return useQuery(["userData", userId], () =>
     apiService.get(`user/${userId}`).then(({ data }) => data)
   );
 }
 
-export default function useMutateLoginUser() {
+export  function useMutateLoginUser() {
   return useMutation(
     (user) => {
       const data = new FormData();
-      data.append("email", user.email);
-      data.append("password", user.password);
-      return apiService.post(`user/login`, data);
+      data.append("email",user.email);
+      data.append("password",user.password);
+      return apiService.post(`http://localhost:5000/auth/login`, user);
     },
     {
       // When mutate is called:
       onSuccess: (responseData) => {
         // Store Token in local storage
+        localStorage.setItem('jwt', responseData.data.access_token);
+        localStorage.setItem('email',responseData.data.email);
+        window.location.href = "http://localhost:3000/register";
       },
       onError: (e) => console.log(e.message),
     }
@@ -26,25 +29,23 @@ export default function useMutateLoginUser() {
 }
 
 
-export default function useMutateRegisterUser() {
+export  function useMutateRegisterUser() {
   return useMutation(
     (user) => {
-      const data = new FormData();
-      data.append("email", user.email);
-      data.append("password", user.password);
-      return apiService.post(`user/register`, data);
+      return apiService.post(`http://localhost:5000/users/create`, user);
     },
     {
       // When mutate is called:
       onSuccess: (responseData) => {
         // Redirect to login page
+        window.location.href = "http://localhost:3000";
       },
       onError: (e) => console.log(e.message),
     }
   );
 }
 
-export default function useMutateUpdateUser(userId) {
+export  function useMutateUpdateUser(userId) {
   const queryClint = useQueryClient();
   return useMutation(
     (user) => {
