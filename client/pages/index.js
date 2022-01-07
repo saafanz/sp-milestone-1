@@ -10,5 +10,5 @@ export default function Home() {
     setAccessToken(token);
   }, []);
 
-  return accessToken ? <Login /> : <Dashboard /> ;
+  return !accessToken ? <Login /> : <Dashboard /> ;
 }

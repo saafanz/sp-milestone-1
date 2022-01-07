@@ -39,7 +39,8 @@ export class AuthService {
     const user = await this.validateUser(payload.email,payload.password);
     if (!user|| user.password!== payload.password ) 
       throw new UnauthorizedException("wrong input")
-    return this.jwtService.sign(payload,{secret:process.env.JWT_SECRET,expiresIn:"1h"});
+
+    return {access_token: this.jwtService.sign(payload,{secret:process.env.JWT_SECRET,expiresIn:"1h"})}
 
     /* 
       TODO: Add your login logic here to return

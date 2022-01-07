@@ -1,10 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { type } from 'os';
-import * as mongoose from 'mongoose'
-import { User } from '.';
+
 export type TransactionDocument = Transaction & Document;
-import { UserSchema } from '.';
 
 /*
   The @Schema() decorator marks a class as a schema definition. 
@@ -17,19 +14,22 @@ import { UserSchema } from '.';
 @Schema()
 export class Transaction {
   @Prop({ required: true })
+  date: string;
+
+  @Prop({ required: true })
   name: string;
 
   @Prop({ required: true })
-  from: string;
-
-  @Prop({ required: true})
-  to: string;
+  debit: number;
 
   @Prop({ required: true })
-  amount: number;
+  credit: number;
 
-  @Prop({required: true})
-  type: string;
+  @Prop({ required: true })
+  totalAmount: number;
 
-
+  @Prop({ required: true })
+  accountId: string;
 }
+
+export const TransactionSchema = SchemaFactory.createForClass(Transaction);
