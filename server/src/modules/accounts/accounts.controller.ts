@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AccountService } from './accounts.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -7,9 +7,9 @@ export class AccountController {
   // TODO: Define your Transaction Endpoints
   constructor(private accountService: AccountService) {}
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('/:userId')
-  async getTransactions(@Param() params){
-    return await this.accountService.listAccounts(params.userId);
+ // @UseGuards(AuthGuard('jwt'))
+  @Get('findAcc')
+  async getTransactions(@Body() req:any){
+    return await this.accountService.listAccounts(req.email);
   }
 }

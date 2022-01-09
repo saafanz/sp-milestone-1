@@ -26,6 +26,51 @@ export class UserService {
     return  this.userModel.findOne({email: enteretdemail.email}).clone();
   }
 
+  async findByuser(enteretdemail: any): Promise<Account>{
+  
+    return this.accountModel.findOne({userId : enteretdemail.email}).exec();
+  }
+  
+
+  async transaction(email: any ,toemail:any , amount: number) {
+    let user =await this.userModel.findOne({email:email}).clone();
+    let touser = await this.userModel.findOne({email:toemail}).clone();
+    if(!user){
+      return"wrong email";
+    }
+    if(!touser){
+      return "wrong to email"
+    }else{
+      const account = await this.accountModel.findOne({userId : user.email});
+      const toaccount = await this.accountModel.findOne({userId : touser.email});
+      toaccount.totalAmount+= amount;
+      account.totalAmount-= amount;
+      toaccount.save();
+      account.save();
+      new this.transactionModel({
+        accountId: account.userId,
+        debit: 0,
+        credit: 100,
+        totalAmount: account.totalAmount,
+        date: Date.now().toString(),
+        from_or_to: 'to '+ touser.email
+      }).save();
+      new this.transactionModel({
+        accountId: toaccount.userId,
+        debit: 0,
+        credit:0 ,
+        totalAmount: toaccount.totalAmount,
+        date: Date.now().toString(),
+        from_or_to: 'from '+ user.email
+      }).save();
+
+      return account;
+
+
+    }
+  }
+  
+
 
 
   

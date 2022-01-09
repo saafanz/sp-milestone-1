@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { createUserDto } from '../auth/dtos/createUser.dto';
 import { User } from '@sp/schemas';
+import { request } from 'express';
 
 
 
@@ -32,6 +33,18 @@ export class UserController {
     return this.userService.findByemail(req);
 
   }
+
+  @Get('findAccount')
+  findAccount(@Body() req: any):any{
+    return this.userService.findByuser(req);
+  }
+  
+  @Post('trans')
+  trans(@Body()req:any):any{
+    return this.userService.transaction(req.email,req.toemail,req.amount);
+
+  }
+  
 
   /**
    * API endpoint handler returns all users from mongo database

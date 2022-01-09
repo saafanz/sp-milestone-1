@@ -17,7 +17,7 @@ export class Transaction {
   date: string;
 
   @Prop({ required: true })
-  name: string;
+  from_or_to: string;
 
   @Prop({ required: true })
   debit: number;

@@ -21,6 +21,7 @@ export  function useMutateLoginUser() {
         // Store Token in local storage
         localStorage.setItem('jwt', responseData.data.access_token);
         localStorage.setItem('email',responseData.data.email);
+        window.location.href = "http://localhost:3000";
       },
       onError: (e) => console.log(e.message),
     }
@@ -37,7 +38,7 @@ export  function useMutateRegisterUser() {
       // When mutate is called:
       onSuccess: (responseData) => {
         // Redirect to login page
-        window.location.href = "http://localhost:3001";
+        window.location.href = "http://localhost:3000";
       },
       onError: (e) => console.log(e.message),
     }

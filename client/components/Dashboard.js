@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/link-passhref */
-/* eslint-disable react/jsx-key */
 import { useRouter } from "next/dist/client/router";
 import React, { useEffect, useState } from "react";
 import {Button} from "reactstrap";
@@ -23,8 +21,8 @@ export default function Dashboard() {
 
   useEffect(
     () =>{
-      var id = parseJwt(localStorage.getItem("jwt")).id;
-      apiService.get("/accounts/" + id).then(
+      var id = parseJwt(localStorage.getItem("jwt")).email;
+      apiService.get("/accounts/findAcc" + id).then(
         (data) =>{
           setData(data.data);
           setIsLoading(false);
@@ -46,10 +44,10 @@ export default function Dashboard() {
       { !isLoading && <div className={styles.pad_child}>
         <h2>Accounts</h2>
         {data.map(function(account, i){
-          return <div className={styles.flex_row}>
-          <span>Account #{account._id}</span>
+          return <div className={styles.flex_row} key={i}>
+          <span>Account #{account.userId}</span>
           <span>Total Amount: ${account.totalAmount}</span>
-          <Button color="primary" onClick={() =>{localStorage.setItem("currentAccount", account._id)}}><Link  href="transactions"><span className={styles.white}>View Transactions</span></Link></Button>
+          <Button color="primary" onClick={() =>{localStorage.setItem("currentAccount", account.userId)}}><Link  href="transactions" passHref><span className={styles.white}>View Transactions</span></Link></Button>
         </div> 
         })}
       </div> }
