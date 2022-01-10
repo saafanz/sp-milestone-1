@@ -4,25 +4,28 @@ import {Button} from "reactstrap";
 import styles from "../styles/Home.module.css";
 import apiService from "../services/apiService";
 import Link from "next/link";
+import jwt_decode from "jwt-decode";
 
 export default function Dashboard() {
   const router = useRouter();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+//   function parseJwt (token) {
+//     var base64Url = token.split('.')[1];
+//     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+//     var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+//         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+//     }).join(''));
 
-  function parseJwt (token) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  };
+//     return JSON.parse(jsonPayload);
+// };
 
   useEffect(
     () =>{
-      var id = parseJwt(localStorage.getItem("jwt")).email;
-      apiService.get("/accounts/findAcc" + id).then(
+      //const user = jwt.decode( localStorage.getItem("jwt"), "sp-secret-0000", algorithm='HS256' )
+      var decoded = jwt_decode(localStorage.getItem("jwt"));
+      apiService.get("/users/findAcc" + decoded.email).then(
         (data) =>{
           setData(data.data);
           setIsLoading(false);

@@ -19,6 +19,10 @@ export class UserService {
     return this.userModel.find().exec();
   }
 
+  listAccounts(userId : string){
+    return this.accountModel.find({userId: userId}).exec();
+  }
+
 
   async findByemail(enteretdemail: any): Promise<User>{
     // let users = this.userModel.find().exec();
@@ -29,6 +33,10 @@ export class UserService {
   async findByuser(enteretdemail: any): Promise<Account>{
   
     return this.accountModel.findOne({userId : enteretdemail.email}).exec();
+  }
+
+  listTransactions(accountId : string){
+    return this.transactionModel.find({accountId: accountId}).exec();
   }
   
 

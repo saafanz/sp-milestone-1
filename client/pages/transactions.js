@@ -1,174 +1,61 @@
-//import logo from './logo.svg';
-import { Container, AppBar, Typography, Grow, Grid} from '@material-ui/core';
-import { install } from '@material-ui/styles';
-import { makeStyles } from '@material-ui/core/styles'
+import { useRouter } from "next/dist/client/router";
+import React, { useEffect, useState } from "react";
+import {Button} from "reactstrap";
+import styles from "../styles/Home.module.css";
+import apiService from "../services/apiService";
+import Link from "next/link";
 
-import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { useEffect , useState} from "react";
-import axios from 'axios';
+export default function transactions() {
+  const router = useRouter();
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [accountId, setAccountId] = useState("");
 
+  function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  };
 
-
-const useStyles = makeStyles(theme => ({
-  '@global': {
-    body: {
-      backgroundColor: theme.palette.common.white,
-    },
-  },
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-
-  }
-}));
-
-
-
-
-function createData(date, name, from, to, amount , type) {
-  return { date, name, from, to, amount , type };
-}
-// function tr(){
-//   axios.get('http://localhost:3000/transaction').then(response => {
-
-//   console.log(response);
-//   });
-// }
-
-const rows = [//date             name         from    to        amount    type
-  createData('12/04/2021', 'Initial Transaction' , 'Bank' , 'My Account' , '100' , 'Credit'),
-];
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function App() {
-const [users,setUsers]=React.useState([]);
-const [Transactions, setTransactions] = useState([]);
- 
-  useEffect(() => {
-    axios.get("http://localhost:5000/users/list").then((response) => {
-      setTransactions(response.data);
-      console.log(response.data)
-    });
+  useEffect(
+    () =>{
+      var id = localStorage.getItem("currentAccount");
+      setAccountId(id);
+      apiService.get("/transactions/:accountId" + id).then(
+        (data) =>{
+          setData(data.data);
+          setIsLoading(false);
+        }
+      );
     }, []);
 
 
-
-  const classes = useStyles();
-  return (
-    
-    <div className="App">
-
-
-      
-{
-
-
- 
-       
-      <Container maxWidth = "g"> 
-        <AppBar className={classes.appBar} position="static" color="inherit">
-          <Typography className={classes.heading} variant = "h2" align = "center">
-
-            </Typography>  
-         </AppBar>
-        <Grow in>
-          <Container>
-
-
-          <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell> Date</TableCell>
-            <TableCell align="right"> Name</TableCell>
-            <TableCell align="right"> Balance</TableCell>
-            <TableCell align="right">User's phone</TableCell>
-            <TableCell align="right">User's ID</TableCell>
-            <TableCell align="right">Type</TableCell>
-           
-          </TableRow>
-        </TableHead>
-        <TableBody>
-
-          {Transactions.map((row) => (
-            <TableRow
-              key={row.date}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.date}
-                
-              </TableCell>
-
-              <TableCell align="right">{row.name}</TableCell>
-              <TableCell align="right">{row.amount}</TableCell>
-              <TableCell align="right">{row.phone}</TableCell> 
-               <TableCell align="right">{row.giu_id}</TableCell>
-              <TableCell align="right">{row.type}</TableCell> 
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-
-
-
-            
-            <Grid container justify = "space-between" alignItems = "stretch">
-              <Grid item xs = {12} sm = {7}>
-                  <appBar className = {classes.appBar} position="static" color="inherit">
-                    
-                  </appBar>
-              </Grid>
-            </Grid>
-              <Grid item xs = {12} sm = {4}>
-              <appBar className = {classes.appBar} position="static" color="inherit">
-                    
-                  </appBar>
-              </Grid>
-          </Container>
-
-        </Grow>
-      </Container> 
-  
-  
+  function signOut(){
+    localStorage.removeItem("jwt");
+    router.push('/');
   }
-
-
-    </div>
-  
-
-  
-  );
+  return <div>
+      <div className={[styles.flex_row]}>
+        <h1>Transactions</h1>
+        <Button color="primary" onClick={signOut}>Sign Out</Button> 
+      </div>
+      { isLoading && <div>Loading...</div> }
+      { !isLoading && <div className={styles.pad_child}>
+        <h2>Account#{accountId} </h2>
+        {data.map(function(transaction, i){
+          return <div className={styles.flex_row} key={i}>
+          <span>Date: {transaction.date}</span> 
+          <span>Transaction: {transaction.name}</span>
+          <span>debit: {transaction.debit}</span>
+          <span>credit: {transaction.credit}</span>
+          <span>total: {transaction.totalAmount}</span>
+        </div> 
+        })}
+      </div> }
+    </div> ;
 }
- 
-export default App;
+
+
