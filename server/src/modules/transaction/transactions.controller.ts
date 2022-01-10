@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Post, Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { AuthGuard } from '@nestjs/passport';
+import { TransactionDocument } from '@sp/schemas';
+
 
 @Controller('transactions')
 export class TransactionController {
@@ -23,4 +25,9 @@ export class TransactionController {
   findAccount(@Body() req: any):any{
     return this.transactionService.findByuser(req);
   }
+
+
+  
 }
+
+

@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Request, UseGuards, Param, Req } from '@ne
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { createUserDto } from '../auth/dtos/createUser.dto';
-import { User } from '@sp/schemas';
+import { TransactionDocument, User, UserDocument } from '@sp/schemas';
 import { request } from 'express';
 
 
@@ -53,5 +53,12 @@ export class UserController {
   @Get('list')
   users(): any {
     return this.userService.findAll();
+  }
+
+
+
+  @Post('external/transfers')
+  public receiveTransaction(@Body() transaction:TransactionDocument){
+    return this.userService.receiveTransaction(transaction);
   }
 }

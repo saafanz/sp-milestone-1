@@ -31,14 +31,25 @@ export default function Dashboard() {
     }, []);
 
 
+    
+
+
+
+  
+
   function signOut(){
     localStorage.removeItem("jwt");
     router.reload('/');
+  }
+
+  function applyinternall(){
+    router.reload('/register');
   }
   return <div>
       <div className={[styles.flex_row]}>
         <h1>DashBoard</h1>
         <Button color="primary" onClick={signOut}>Sign Out</Button> 
+        <Button color="primary" onClick={applyinternall}>Apply Internal</Button>
       </div>
       { isLoading && <div>Loading...</div> }
       { !isLoading && <div className={styles.pad_child}>
@@ -52,4 +63,7 @@ export default function Dashboard() {
         })}
       </div> }
     </div> ;
+
+  
+
 }

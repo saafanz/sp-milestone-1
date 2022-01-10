@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Transaction, User, UserDocument, UserSchema } from '@sp/schemas';
 import { Model } from 'mongoose';
@@ -8,6 +8,7 @@ import { TransactionDocument } from '@sp/schemas';
 
 @Injectable()
 export class UserService {
+  userservice: any;
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>,
   @InjectModel(Transaction.name) private transactionModel: Model<TransactionDocument>,
   @InjectModel(Account.name) private accountModel: Model<AccountDocument>) {}
@@ -69,9 +70,35 @@ export class UserService {
 
     }
   }
-  
 
+  public async receiveTransaction(newExternalTransaction){
+    await this.userservice.findByuser(newExternalTransaction.receiverAccountNumber)
+    .then( async(account)=>{
+      if(!account){
+        throw new HttpException({
+          status:HttpStatus.BAD_REQUEST,
+          error:"account not found"
+        }, HttpStatus.BAD_REQUEST)
+      }
+      else{
+        const transaction = new this.transactionModel({
+          accountid: newExternalTransaction.receiverAccountNumber,
+          from_or_to: 'from an external Bank',
+          amount: parseInt(newExternalTransaction.amount),
+          date: Date.now().toString()
+        });
+        return transaction.save();
+    }
+  }).catch(err =>{
+    console.log(err)
+    throw new HttpException({
+      status: HttpStatus.BAD_REQUEST,
+      error:"account not found"}
+      ,HttpStatus.BAD_REQUEST)
 
+    })
+
+  }
 
   
   async create(user:User): Promise<User> {
@@ -96,4 +123,11 @@ export class UserService {
       return newItem
     }
   }
-}
+
+
+  
+
+
+} 
+ 
+
