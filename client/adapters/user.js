@@ -44,6 +44,25 @@ export  function useMutateRegisterUser() {
     }
   );
 }
+export  function useMutateTransactionsUser() {
+  return useMutation(
+    (user) => {
+      const data = new FormData();
+      data.append("email",user.email);
+      data.append("toemail",user.toemail);
+      data.append("Amount",user.amount);
+      return apiService.post(`Http://localhost:5000/users/trans`,user);
+    },
+    {
+      // When mutate is called:
+      onSuccess: (responseData) => {
+        window.location.href = "http://localhost:3000";
+      
+      },
+      onError: (e) => console.log(e.message),
+    }
+  );
+}
 
 export  function useMutateUpdateUser(userId) {
   const queryClint = useQueryClient();

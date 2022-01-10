@@ -34,6 +34,18 @@ export class UserController {
 
   }
 
+  
+  //@UseGuards(AuthGuard('jwt'))
+  @Get('findAcc')
+  async getTransactions(@Body() req:any){
+    return await this.userService.listAccounts(req.email);
+  }
+
+  @Get('/:accountId')
+  async getTransactions1(@Param() params){
+    return await this.userService.listTransactions(params.accountId);
+  }
+
   @Get('findAccount')
   findAccount(@Body() req: any):any{
     return this.userService.findByuser(req);
