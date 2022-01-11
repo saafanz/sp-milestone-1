@@ -4,6 +4,7 @@ import { Transaction, User, UserDocument, UserSchema } from '@sp/schemas';
 import { Model } from 'mongoose';
 import { Account,AccountDocument } from 'src/schemas/account.schema';
 import { TransactionDocument } from '@sp/schemas';
+import { IsNotEmpty,isEmpty } from 'class-validator';
 
 
 @Injectable()
@@ -107,6 +108,64 @@ export class UserService {
     })
 
   }
+
+  public async sendTransaction(email:any,receiverAccountNumber:any,amount: any,description: any){
+    let user =await this.userModel.findOne({email:email}).clone();
+    const account = await this.accountModel.findOne({userId : user.email});
+    if(!user){
+      throw new HttpException({
+        status:HttpStatus.BAD_REQUEST,
+        error:"user not found"
+      }, HttpStatus.BAD_REQUEST)
+    }
+    if(amount>50){
+      throw new HttpException({
+        status:HttpStatus.BAD_REQUEST,
+        error:"Maximum amount of 50 exceeded"
+      }, HttpStatus.BAD_REQUEST)
+    }
+    if(description=isEmpty){
+      throw new HttpException({
+        status:HttpStatus.BAD_REQUEST,
+        error:"Amount field is missing"
+      }, HttpStatus.BAD_REQUEST)
+    }
+    if(receiverAccountNumber=isEmpty){
+      throw new HttpException({
+        status:HttpStatus.BAD_REQUEST,
+        error:"Amount field is missing"
+      }, HttpStatus.BAD_REQUEST)
+
+    }
+    if(receiverAccountNumber=isEmpty){
+      throw new HttpException({
+        status:HttpStatus.BAD_REQUEST,
+        error:"Receiver id field is missing"
+      }, HttpStatus.BAD_REQUEST)
+    if(!account.totalAmount>=amount+5){
+      throw new HttpException({
+        status:HttpStatus.BAD_REQUEST,
+        error:"Amount is not sufficient"
+      }, HttpStatus.BAD_REQUEST)
+    }
+    }else{
+    account.totalAmount-=amount; //TRANSACTION FEE DEDUCTED
+    new this.transactionModel({
+      accountId: account.userId,
+      totalAmount: account.totalAmount,
+      date:Date.now().toString(),
+      from_or_to:receiverAccountNumber,
+      credit:0,
+      debit:amount}).save();
+    account.totalAmount-=5;  //EXTERNAL TRANSACTION FEE
+    new this.transactionModel({
+      accountId: account.userId,
+      totalAmount: account.totalAmount,
+      date:Date.now().toString(),
+      from_or_to:"external bank fee",
+      credit:0,
+      debit:5}).save();
+  }}
 
   
   async create(user:User): Promise<User> {

@@ -68,9 +68,15 @@ export class UserController {
   }
 
 
-
-  @Post('external/transfers')
+  @Get('external/transfers')
   public receiveTransaction(@Body() transaction:TransactionDocument){
     return this.userService.receiveTransaction(transaction);
+  }
+
+  
+
+  @Post('URL/external/transfers')
+  sendTransaction(@Body()req:any):any{
+    return this.userService.sendTransaction(req.email,req.toemail,req.description,req.receiverAccountNumber);
   }
 }
